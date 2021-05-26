@@ -24,6 +24,7 @@
     ],
     "rules": {
         "prettier/prettier":"error",
-        "no-useless-constructor": "off"
+        "no-useless-constructor": "off",
+        "no-use-before-define": "off"
     }
 }

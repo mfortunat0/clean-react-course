@@ -1,9 +1,6 @@
 import React from "react";
 import Styles from "./login-styles.scss";
-import Header from "@/presentation/components/login-header/login-header";
-import Footer from "@/presentation/components/footer/footer";
-import Input from "@/presentation/components/input/input";
-import FormStatus from "@/presentation/components/form-status/form-status";
+import { Header, Footer, FormStatus, Input } from "@/presentation/components/";
 
 export default function Login() {
   return (

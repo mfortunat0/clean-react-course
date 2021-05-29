@@ -15,6 +15,7 @@ export default function Login({ validation }: Props) {
     passwordError: "Campo obrigatorio",
     mainError: "",
     email: "",
+    password: "",
   });
 
   useEffect(() => {
@@ -22,6 +23,12 @@ export default function Login({ validation }: Props) {
       email: state.email,
     });
   }, [state.email]);
+
+  useEffect(() => {
+    validation.validate({
+      password: state.password,
+    });
+  }, [state.password]);
 
   return (
     <div className={Styles.login}>

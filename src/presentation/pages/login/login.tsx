@@ -11,7 +11,7 @@ type Props = {
 export default function Login({ validation }: Props) {
   const [state, setState] = useState({
     isLoading: false,
-    emailError: "Campo obrigatorio",
+    emailError: "",
     passwordError: "Campo obrigatorio",
     mainError: "",
     email: "",
@@ -19,7 +19,10 @@ export default function Login({ validation }: Props) {
   });
 
   useEffect(() => {
-    validation.validate("email", state.email);
+    setState({
+      ...state,
+      emailError: validation.validate("email", state.email),
+    });
   }, [state.email]);
 
   useEffect(() => {

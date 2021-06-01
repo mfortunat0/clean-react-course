@@ -40,7 +40,7 @@ export default function Login({ validation }: Props) {
           />
           <button
             data-testid="submit"
-            disabled
+            disabled={!!state.emailError || !!state.passwordError}
             className={Styles.submit}
             type="submit"
           >

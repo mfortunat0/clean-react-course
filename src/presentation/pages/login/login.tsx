@@ -32,6 +32,9 @@ export default function Login({ validation, authentication }: Props) {
     event: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     event.preventDefault();
+    if (state.isLoading) {
+      return;
+    }
     setState({
       ...state,
       isLoading: true,

@@ -140,4 +140,11 @@ describe("Login Component", () => {
     simulateValidation(sut, email, password);
     expect(authenticationSpy.params).toEqual({ email, password });
   });
+
+  test("Should call authentication only once", () => {
+    const { sut, authenticationSpy } = makeSut();
+    simulateValidation(sut);
+    simulateValidation(sut);
+    expect(authenticationSpy.callsCount).toBe(1);
+  });
 });

@@ -5,9 +5,11 @@ import {
   RenderResult,
   fireEvent,
   cleanup,
+  waitFor,
 } from "@testing-library/react";
 import Login from "./login";
 import { ValidationStub, AuthenticationSpy } from "@/presentation/test/";
+import { InvalidCredentialsError } from "@/domain/errors";
 
 type SutType = {
   sut: RenderResult;
@@ -31,7 +33,7 @@ const makeSut = (params?: SutParams): SutType => {
   };
 };
 
-const simulateValidation = (
+const simulateValidSubmit = (
   sut: RenderResult,
   email = faker.internet.email(),
   password = faker.internet.password()
@@ -107,11 +109,13 @@ describe("Login Component", () => {
     populateEmailField(sut);
     simulateStatusFormField(sut, "email");
   });
+
   test("Should show valid password state if Validation succeeds", () => {
     const { sut } = makeSut();
     populatePasswordField(sut);
     simulateStatusFormField(sut, "password");
   });
+
   test("Should enable submit button if form is valid", () => {
     const { sut } = makeSut();
     const passwordInput = sut.getByTestId("password");
@@ -128,7 +132,7 @@ describe("Login Component", () => {
 
   test("Should show load spinner on submit", () => {
     const { sut } = makeSut();
-    simulateValidation(sut);
+    simulateValidSubmit(sut);
     const spinner = sut.getByTestId("spinner");
     expect(spinner).toBeTruthy();
   });
@@ -137,14 +141,14 @@ describe("Login Component", () => {
     const { sut, authenticationSpy } = makeSut();
     const email = faker.internet.email();
     const password = faker.internet.password();
-    simulateValidation(sut, email, password);
+    simulateValidSubmit(sut, email, password);
     expect(authenticationSpy.params).toEqual({ email, password });
   });
 
   test("Should call authentication only once", () => {
     const { sut, authenticationSpy } = makeSut();
-    simulateValidation(sut);
-    simulateValidation(sut);
+    simulateValidSubmit(sut);
+    simulateValidSubmit(sut);
     expect(authenticationSpy.callsCount).toBe(1);
   });
 
@@ -154,5 +158,19 @@ describe("Login Component", () => {
     populateEmailField(sut);
     fireEvent.submit(sut.getByTestId("form"));
     expect(authenticationSpy.callsCount).toBe(0);
+  });
+
+  test("Should present error if authentication fails", async () => {
+    const { sut, authenticationSpy } = makeSut();
+    const error = new InvalidCredentialsError();
+    jest
+      .spyOn(authenticationSpy, "auth")
+      .mockReturnValueOnce(Promise.reject(error));
+    simulateValidSubmit(sut);
+    const errorWrap = sut.getByTestId("error-wrap");
+    await waitFor(() => errorWrap);
+    const mainError = sut.getByTestId("main-error");
+    expect(mainError.textContent).toBe(error.message);
+    expect(errorWrap.childElementCount).toBe(1);
   });
 });
